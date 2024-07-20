@@ -32,67 +32,95 @@ export class Botjam {
       throw new Error('You need to run `botjam.configure` before anything')
     }
 
-    // TODO: ssh connection
-    // await this.ssh.connect({
-    // TODO: support multiple hosts
-    // host: this.config.hosts[0],
-    // username: 'steel',
-    // privateKeyPath: '/home/steel/.ssh/id_rsa',
-    // })
+    for (const host of config.hosts) {
+      if (host !== 'localhost') {
+        const ssh = new NodeSSH()
+        await ssh.connect({ host })
+        this.sshInstances.push(ssh)
+      }
+    }
 
     const total = this.state.operations.length
     for (const [index, operation] of this.state.operations.entries()) {
       const spinner = ora(`[${index}/${total}] ${operation.name}`)
       spinner.start()
-      await operation.run({
-        async runCommand(command, options = []) {
-          let realCommand = command
-          let realOptions = [...options]
-          if (
-            operation.become === true ||
-            (config.become === true && operation.become !== false)
-          ) {
-            realCommand = 'sudo'
-            realOptions?.unshift(command)
-            spinner.warn()
-            await ensureSudo()
-          }
+      for (const [hostIndex, host] of config.hosts.entries()) {
+        const ssh = this.sshInstances[hostIndex]
+        await operation.run({
+          async runCommand(command, options = []) {
+            let realCommand = command
+            let realOptions = [...options]
 
-          return new Promise((resolve) => {
-            // TODO: timeout
-            // when timeout, zombie process can remain, so take care
-            // const ps = spawn(realCommand, realOptions)
-            const ps = exec([realCommand].concat(realOptions).join(' '))
+            if (
+              operation.become === true ||
+              (config.become === true && operation.become !== false)
+            ) {
+              realCommand = 'sudo'
+              realOptions?.unshift(command)
+              spinner.warn()
+              if (host === 'localhost') {
+                await ensureSudo()
+              }
+            }
 
-            let stdout = ''
-            let stderr = ''
+            // I'm not sure which should we use, exec vs spawn
+            const realShellCommand = [realCommand].concat(realOptions).join(' ')
 
-            ps.stdout?.on('data', (data) => {
-              stdout += data.toString()
-            })
+            if (host === 'localhost') {
+              return new Promise((resolve) => {
+                // TODO: timeout
+                // when timeout, zombie process can remain, so take care
+                // const ps = spawn(realCommand, realOptions)
+                const ps = exec(realShellCommand)
 
-            ps.stderr?.on('data', (data) => {
-              stderr += data.toString()
-            })
+                let stdout = ''
+                let stderr = ''
 
-            ps.on('error', (error) => {
-              resolve({ error, stdout, stderr })
-            })
+                ps.stdout?.on('data', (data) => {
+                  stdout += data.toString()
+                })
 
-            ps.on('close', (code) => {
+                ps.stderr?.on('data', (data) => {
+                  stderr += data.toString()
+                })
+
+                ps.on('error', (error) => {
+                  resolve({ error, stdout, stderr })
+                })
+
+                ps.on('close', (code) => {
+                  if (code !== 0) {
+                    resolve({
+                      error: new Error(`Process exited with code: ${code}`),
+                      stdout,
+                      stderr,
+                    })
+                  } else {
+                    resolve({ error: null, stdout, stderr })
+                  }
+                })
+              })
+            } else {
+              if (!ssh) {
+                throw new Error('No ssh instance found')
+              }
+              if (!ssh.isConnected()) {
+                throw new Error('SSH instance is not connected')
+              }
+              const { stdout, stderr, code } =
+                await ssh.execCommand(realShellCommand)
               if (code !== 0) {
-                resolve({
+                return {
                   error: new Error(`Process exited with code: ${code}`),
                   stdout,
                   stderr,
-                })
-              } else {
-                resolve({ error: null, stdout, stderr })
+                }
               }
-            })
-          })
-        },
-      })
+              return { error: null, stdout, stderr }
+            }
+          },
+        })
+      }
       spinner.succeed(`[${index + 1}/${total}] ${operation.name}`)
     }
     consola.success('Success!')
