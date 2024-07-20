@@ -21,4 +21,5 @@ jobs:
           path: |
             node_modules
       - run: |
+          pnpm install
           pnpm tsc
