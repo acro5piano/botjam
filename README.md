@@ -36,8 +36,7 @@ botjam.tasks.apt({
   state: 'present',
 })
 
-botjam.tasks.cron({
-  name: 'Vacuum old logs on 12am',
+botjam.tasks.cron('Vacuum old logs on 12am', {
   minute: '0',
   hour: '0',
   job: 'journalctl --vacuum-time=14d >/dev/null 2>&1',
