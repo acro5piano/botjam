@@ -1,4 +1,4 @@
-import { exec, spawn } from 'node:child_process'
+import { spawn } from 'node:child_process'
 import { PacmanModule } from './modules/pacman'
 import { createState } from './state'
 import { NodeSSH } from 'node-ssh'
@@ -50,7 +50,7 @@ export class Botjam {
           ) {
             realCommand = 'sudo'
             realOptions?.unshift(command)
-            spinner.stopAndPersist()
+            spinner.warn()
             await ensureSudo()
           }
 
@@ -95,7 +95,7 @@ export class Botjam {
 }
 
 async function ensureSudo() {
-  const ps = exec('sudo true')
+  const ps = spawn('sudo', ['true'])
   return new Promise<void>((resolve, reject) => {
     ps.on('close', (code) => {
       if (code !== 0) {

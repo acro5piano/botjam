@@ -1,7 +1,7 @@
 import { ExecException } from 'node:child_process'
 
 export type BaseModuleArgs = {
-  become?: boolean
+  become: boolean
 }
 
 export type Operation = BaseModuleArgs & {
