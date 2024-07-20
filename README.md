@@ -27,7 +27,7 @@ Then, write your first configuration. This example sets up a cronjob to remove s
 ```typescript
 // dotfiles.ts
 
-import { botjam } from '../dist'
+import { botjam } from 'botjam'
 
 botjam.configure({
   servers: ['localhost'],
@@ -47,6 +47,8 @@ botjam.run()
 Running that script will configure server and the output should be like this:
 
 ```
+bun run dotfiles.ts
+
 ✔ [1/2] Ensure file existence of: .tmux.conf
 ℹ ==> CHANGED                                                                       8:02:53 PM
 ✔ [2/2] Ensure file existence of: prettier.config.js
