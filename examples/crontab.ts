@@ -1,7 +1,7 @@
 import { botjam } from '../dist'
 
 botjam.configure({
-  hosts: 'localhost',
+  hosts: ['localhost'],
   become: true,
 })
 
