@@ -1,4 +1,4 @@
-import { exec, spawn } from 'node:child_process'
+import { spawn } from 'node:child_process'
 import { PacmanModule } from './modules/pacman'
 import { createState } from './state'
 import { NodeSSH } from 'node-ssh'

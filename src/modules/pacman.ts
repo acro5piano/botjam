@@ -9,7 +9,7 @@ type PacmanArgs = BaseModuleArgs & {
 
 export const PacmanModule = createBotjamModule<PacmanArgs>({
   getName(args) {
-    return `Install package with pacman ${args.name}`
+    return `Install package with pacman: ${args.name}`
   },
   async shouldApply(args, context) {
     const { stdout } = await context.runCommand('pacman', ['-Qq', args.name])
