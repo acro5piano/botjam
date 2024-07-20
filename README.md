@@ -48,13 +48,9 @@ Running that script will configure server and the output should be like this:
 
 ```
 bun run dotfiles.ts
-
-✔ [1/2] Ensure file existence of: .tmux.conf
-ℹ ==> CHANGED                                                                       8:02:53 PM
-✔ [2/2] Ensure file existence of: prettier.config.js
-ℹ Cleaning up...                                                                    8:02:53 PM
-✔ Success!                                                                          8:02:53 PM
 ```
+
+![image](https://github.com/user-attachments/assets/47ec9f4f-d806-4447-81d8-91f2615a0507)
 
 # TODO
 
