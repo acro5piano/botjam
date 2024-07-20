@@ -2,12 +2,12 @@ import { ExecException } from 'node:child_process'
 
 export type BaseModuleArgs = {
   debug?: boolean
-  become?: boolean
+  become?: boolean | undefined
 }
 
 export type Operation = BaseModuleArgs & {
   name: string
-  become?: boolean
+  become?: boolean | undefined
   run: (context: Context) => Promise<unknown>
 }
 

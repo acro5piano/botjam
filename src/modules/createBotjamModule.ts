@@ -19,7 +19,7 @@ export function createBotjamModule<T extends BaseModuleArgs>(
     return function addOperation(args: T) {
       state.operations.push({
         name: factory.getName(args),
-        become: args.become || false,
+        become: args.become,
         run(context) {
           return run(args, context)
         },

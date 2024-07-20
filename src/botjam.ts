@@ -6,8 +6,16 @@ import consola from 'consola'
 import ora from 'ora'
 import { ShellModule } from './modules/shell'
 
+type Server =
+  | 'localhost'
+  | {
+      host: string
+      username: string
+      privateKeyPath: string
+    }
+
 type BotjamConfig = {
-  hosts: string[]
+  servers: Server[]
   become: boolean
 }
 
@@ -32,23 +40,24 @@ export class Botjam {
       throw new Error('You need to run `botjam.configure` before anything')
     }
 
-    for (const host of config.hosts) {
-      if (host !== 'localhost') {
+    for (const server of config.servers) {
+      if (server !== 'localhost') {
         const ssh = new NodeSSH()
         await ssh.connect({
-          host,
-          username: 'admin',
+          host: server.host,
+          username: server.username,
+          privateKeyPath: server.username,
         })
-        this.sshInstances.set(host, ssh)
+        this.sshInstances.set(server.host, ssh)
       }
     }
 
     const total = this.state.operations.length
+    const sshInstances = this.sshInstances
     for (const [index, operation] of this.state.operations.entries()) {
       const spinner = ora(`[${index}/${total}] ${operation.name}`)
-      spinner.start()
-      for (const host of config.hosts) {
-        const ssh = this.sshInstances.get(host)
+      spinner.stop()
+      for (const server of config.servers) {
         await operation.run({
           debug(...args) {
             if (operation.debug) {
@@ -68,8 +77,8 @@ export class Botjam {
             ) {
               realCommand = 'sudo'
               realOptions?.unshift(command)
-              spinner.warn()
-              if (host === 'localhost') {
+              if (server === 'localhost') {
+                spinner.warn()
                 await ensureSudo()
               }
             }
@@ -77,7 +86,7 @@ export class Botjam {
             // I'm not sure which should we use, exec vs spawn
             const realShellCommand = [realCommand].concat(realOptions).join(' ')
 
-            if (host === 'localhost') {
+            if (server === 'localhost') {
               return new Promise((resolve) => {
                 // TODO: timeout
                 // when timeout, zombie process can remain, so take care
@@ -112,6 +121,7 @@ export class Botjam {
                 })
               })
             } else {
+              const ssh = sshInstances.get(server.host)
               if (!ssh) {
                 throw new Error('No ssh instance found')
               }
