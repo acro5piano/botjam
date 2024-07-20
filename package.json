@@ -1,6 +1,6 @@
 {
   "name": "botjam",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Botjam is a simple, declarative, and agent-less system configuration automation tool in TypeScript.",
   "keywords": [
     "server",
@@ -11,9 +11,9 @@
   "license": "MIT",
   "main": "dist/index.js",
   "files": [
-    "dist/*.js",
-    "dist/*.map",
-    "dist/*.ts",
+    "dist/**/*.js",
+    "dist/**/*.map",
+    "dist/**/*.ts",
     "package.json",
     "LICENSE",
     "README.md"
