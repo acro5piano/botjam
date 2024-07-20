@@ -56,7 +56,6 @@ export class Botjam {
     const sshInstances = this.sshInstances
     for (const [index, operation] of this.state.operations.entries()) {
       const spinner = ora(`[${index}/${total}] ${operation.name}`)
-      spinner.stop()
       for (const server of config.servers) {
         await operation.run({
           debug(...args) {
@@ -78,7 +77,6 @@ export class Botjam {
               realCommand = 'sudo'
               realOptions?.unshift(command)
               if (server === 'localhost') {
-                spinner.warn()
                 await ensureSudo()
               }
             }
@@ -144,10 +142,11 @@ export class Botjam {
       }
       spinner.succeed(`[${index + 1}/${total}] ${operation.name}`)
     }
-    consola.success('Success!')
+    consola.info('Cleaning up...')
     for (const ssh of this.sshInstances.values()) {
       ssh.dispose()
     }
+    consola.success('Success!')
   }
 }
 
