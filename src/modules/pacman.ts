@@ -11,7 +11,7 @@ export const PacmanModule = createBotjamModule<PacmanArgs>({
   getName(args) {
     return `Install package with pacman: ${args.name}`
   },
-  async shouldApply(args, context) {
+  async shouldRun(args, context) {
     const { stdout } = await context.runCommand('pacman', ['-Qq', args.name])
     return stdout.length === 0
   },

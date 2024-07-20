@@ -9,7 +9,7 @@ export const ShellModule = createBotjamModule<ShellArgs>({
   getName(args) {
     return `Run a shell command: ${args.cmd}`
   },
-  async shouldApply() {
+  async shouldRun() {
     return true
   },
   async apply(args, context) {

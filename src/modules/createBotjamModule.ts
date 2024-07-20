@@ -1,7 +1,7 @@
 import { State, Context, BaseModuleArgs } from '../state'
 
 type BotjamModuleFactory<T extends BaseModuleArgs> = {
-  shouldApply: (args: T, context: Context) => boolean | Promise<boolean>
+  shouldRun: (args: T, context: Context) => boolean | Promise<boolean>
   apply: (args: T, context: Context) => Promise<any>
   getName: (args: T) => string
 }
@@ -11,8 +11,8 @@ export function createBotjamModule<T extends BaseModuleArgs>(
 ) {
   return function botjamModule(state: State) {
     const run = async (args: T, context: Context) => {
-      const shouldApply = await factory.shouldApply(args, context)
-      if (shouldApply) {
+      const shouldRun = await factory.shouldRun(args, context)
+      if (shouldRun) {
         await factory.apply(args, context)
       }
     }
