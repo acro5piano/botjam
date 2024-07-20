@@ -1,4 +1,4 @@
-import { spawn } from 'node:child_process'
+import { exec, spawn } from 'node:child_process'
 import { PacmanModule } from './modules/pacman'
 import { createState } from './state'
 import { NodeSSH } from 'node-ssh'
@@ -16,7 +16,7 @@ export class Botjam {
     pacman: PacmanModule(this.state),
   }
   config?: BotjamConfig
-  ssh = new NodeSSH()
+  sshInstances = [] as NodeSSH[]
 
   configure(config: BotjamConfig) {
     this.config = config
@@ -44,10 +44,16 @@ export class Botjam {
         async runCommand(command, options = []) {
           let realCommand = command
           let realOptions = [...options]
-          if (operation.become || config.become) {
+          if (
+            operation.become === true ||
+            (config.become === true && operation.become !== false)
+          ) {
             realCommand = 'sudo'
             realOptions?.unshift(command)
+            spinner.stopAndPersist()
+            await ensureSudo()
           }
+
           return new Promise((resolve) => {
             // TODO: timeout
             // when timeout, zombie process can remain, so take care
@@ -86,6 +92,21 @@ export class Botjam {
     }
     consola.success('Success!')
   }
+}
+
+async function ensureSudo() {
+  const ps = exec('sudo true')
+  return new Promise<void>((resolve, reject) => {
+    ps.on('close', (code) => {
+      if (code !== 0) {
+        reject()
+        throw new Error(
+          'An unexpected error occurred while checking sudo privileges.',
+        )
+      }
+      resolve()
+    })
+  })
 }
 
 export const botjam = new Botjam()
