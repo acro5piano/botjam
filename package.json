@@ -1,12 +1,32 @@
 {
   "name": "botjam",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.0.1",
+  "description": "Botjam is a simple, declarative, and agent-less system configuration automation tool in TypeScript.",
+  "keywords": ["server", "infrastructure", "ssh"],
+  "author": "gosho-kazuya <ketsume0211@gmail.com>",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "files": [
+    "dist/*.js",
+    "dist/*.map",
+    "dist/*.ts",
+    "package.json",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
+    "r": "tsc && node -r esbuild-register",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "consola": "^3.2.3",
+    "node-ssh": "^13.2.0"
+  },
+  "devDependencies": {
+    "ava": "^6.1.3",
+    "esbuild": "^0.23.0",
+    "esbuild-register": "^3.5.0",
+    "typescript": "^5.5.3"
+  }
 }
