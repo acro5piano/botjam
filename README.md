@@ -2,7 +2,7 @@
 
 # Botjam
 
-[Experimental] Botjam is a simple, declarative, and agent-less automated system configuration tool in TypeScript. Use your familiar language to configure server idempotently!
+[Experimental] Botjam is a simple, declarative, and agent-less automated system configuration tool in TypeScript. Use your familiar language to configure servers idempotently!
 
 ![image](https://github.com/user-attachments/assets/6e429a25-0547-49b5-88fe-f0940dc8e9b5)
 
