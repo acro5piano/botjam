@@ -1,8 +1,11 @@
+import { ExecException } from 'node:child_process'
+
 export type BaseModuleArgs = {
   become?: boolean
 }
 
 export type Operation = BaseModuleArgs & {
+  name: string
   become?: boolean
   run: (context: Context) => Promise<unknown>
 }
@@ -16,6 +19,8 @@ export const createState = (): State => ({
 })
 
 export type Context = {
-  // TODO: correct typing
-  runCommand: (command: string) => Promise<any>
+  runCommand: (
+    command: string,
+    options?: string[],
+  ) => Promise<{ error: null | ExecException; stdout: string; stderr: string }>
 }

@@ -3,6 +3,7 @@ import { State, Context, BaseModuleArgs } from '../state'
 type BotjamModuleFactory<T extends BaseModuleArgs> = {
   shouldApply: (args: T, context: Context) => boolean | Promise<boolean>
   apply: (args: T, context: Context) => Promise<any>
+  getName: (args: T) => string
 }
 
 export function createBotjamModule<T extends BaseModuleArgs>(
@@ -17,6 +18,7 @@ export function createBotjamModule<T extends BaseModuleArgs>(
     }
     return function addOperation(args: T) {
       state.operations.push({
+        name: factory.getName(args),
         become: args.become,
         run(context) {
           return run(args, context)

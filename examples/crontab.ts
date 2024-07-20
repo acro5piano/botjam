@@ -1,9 +1,9 @@
 import { botjam } from '../dist'
 
-// botjam.configure({
-//   hosts: 'localhost',
-//   become: true,
-// })
+botjam.configure({
+  hosts: 'localhost',
+  become: true,
+})
 
 botjam.tasks.pacman({
   name: 'cronie',
