@@ -1,3 +1,4 @@
+import consola from 'consola'
 import { State, Context, BaseModuleArgs } from '../state'
 
 type BotjamModuleFactory<T extends BaseModuleArgs> = {
@@ -14,6 +15,7 @@ export function createBotjamModule<T extends BaseModuleArgs>(
       const shouldRun = await factory.shouldRun(args, context)
       if (shouldRun) {
         await factory.apply(args, context)
+        consola.info(`==> CHANGED`)
       }
     }
     return function addOperation(args: T) {

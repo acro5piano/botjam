@@ -5,6 +5,7 @@ import { NodeSSH } from 'node-ssh'
 import consola from 'consola'
 import ora from 'ora'
 import { ShellModule } from './modules/shell'
+import { FileModule } from './modules/file'
 
 type Server =
   | 'localhost'
@@ -16,7 +17,7 @@ type Server =
 
 type BotjamConfig = {
   servers: Server[]
-  become: boolean
+  become?: boolean
 }
 
 export class Botjam {
@@ -25,6 +26,7 @@ export class Botjam {
   tasks = {
     pacman: PacmanModule(this.state),
     shell: ShellModule(this.state),
+    file: FileModule(this.state),
   }
 
   config?: BotjamConfig

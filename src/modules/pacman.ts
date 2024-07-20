@@ -16,6 +16,11 @@ export const PacmanModule = createBotjamModule<PacmanArgs>({
     return stdout.length === 0
   },
   async apply(args, context) {
-    await context.runCommand('pacman', ['-S', '--noconfirm', args.name])
+    await context.runCommand('pacman', [
+      '-S',
+      '--needed',
+      '--noconfirm',
+      args.name,
+    ])
   },
 })
