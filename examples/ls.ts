@@ -1,13 +1,13 @@
 import { botjam } from '../dist'
 
 botjam.configure({
-  hosts: ['botjam_stg1', 'botjam_stg2'],
+  hosts: ['yourserver.example.com'],
   become: true,
 })
 
 botjam.tasks.shell({
   debug: true,
-  cmd: 'ls > /tmp/botjam',
+  cmd: 'ls | tee -a /tmp/botjam > /dev/stdout',
 })
 
 botjam.run()

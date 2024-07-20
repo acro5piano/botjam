@@ -20,7 +20,7 @@ export class Botjam {
   }
 
   config?: BotjamConfig
-  sshInstances = [] as NodeSSH[]
+  sshInstances = new Map<string, NodeSSH>()
 
   configure(config: BotjamConfig) {
     this.config = config
@@ -35,8 +35,11 @@ export class Botjam {
     for (const host of config.hosts) {
       if (host !== 'localhost') {
         const ssh = new NodeSSH()
-        await ssh.connect({ host })
-        this.sshInstances.push(ssh)
+        await ssh.connect({
+          host,
+          username: 'admin',
+        })
+        this.sshInstances.set(host, ssh)
       }
     }
 
@@ -44,9 +47,17 @@ export class Botjam {
     for (const [index, operation] of this.state.operations.entries()) {
       const spinner = ora(`[${index}/${total}] ${operation.name}`)
       spinner.start()
-      for (const [hostIndex, host] of config.hosts.entries()) {
-        const ssh = this.sshInstances[hostIndex]
+      for (const host of config.hosts) {
+        const ssh = this.sshInstances.get(host)
         await operation.run({
+          debug(...args) {
+            if (operation.debug) {
+              spinner.warn()
+              console.debug(`\n\n==== debug (${operation.name}) ====`)
+              console.debug(...args)
+              console.debug('======================\n')
+            }
+          },
           async runCommand(command, options = []) {
             let realCommand = command
             let realOptions = [...options]
@@ -124,6 +135,9 @@ export class Botjam {
       spinner.succeed(`[${index + 1}/${total}] ${operation.name}`)
     }
     consola.success('Success!')
+    for (const ssh of this.sshInstances.values()) {
+      ssh.dispose()
+    }
   }
 }
 

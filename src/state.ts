@@ -24,4 +24,5 @@ export type Context = {
     command: string,
     args?: string[],
   ) => Promise<{ error: null | ExecException; stdout: string; stderr: string }>
+  debug: (...args: any) => void
 }

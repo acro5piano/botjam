@@ -18,9 +18,7 @@ export const ShellModule = createBotjamModule<ShellArgs>({
       throw new Error('Invalid Command')
     }
     const res = await context.runCommand(command, commandArgs)
-    if (args.debug) {
-      console.log(res)
-    }
+    context.debug(res)
     if (res.error) {
       throw res.error
     }
