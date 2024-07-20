@@ -1,7 +1,8 @@
 import { ExecException } from 'node:child_process'
 
 export type BaseModuleArgs = {
-  become: boolean
+  debug?: boolean
+  become?: boolean
 }
 
 export type Operation = BaseModuleArgs & {
@@ -21,6 +22,6 @@ export const createState = (): State => ({
 export type Context = {
   runCommand: (
     command: string,
-    options?: string[],
+    args?: string[],
   ) => Promise<{ error: null | ExecException; stdout: string; stderr: string }>
 }

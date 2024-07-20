@@ -6,7 +6,8 @@ botjam.configure({
 })
 
 botjam.tasks.shell({
-  cmd: 'ls',
+  debug: true,
+  cmd: 'ls > /tmp/botjam',
 })
 
 botjam.run()

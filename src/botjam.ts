@@ -1,9 +1,10 @@
-import { spawn } from 'node:child_process'
+import { exec, spawn } from 'node:child_process'
 import { PacmanModule } from './modules/pacman'
 import { createState } from './state'
 import { NodeSSH } from 'node-ssh'
 import consola from 'consola'
 import ora from 'ora'
+import { ShellModule } from './modules/shell'
 
 type BotjamConfig = {
   hosts: string[]
@@ -12,9 +13,12 @@ type BotjamConfig = {
 
 export class Botjam {
   state = createState()
+
   tasks = {
     pacman: PacmanModule(this.state),
+    shell: ShellModule(this.state),
   }
+
   config?: BotjamConfig
   sshInstances = [] as NodeSSH[]
 
@@ -57,16 +61,17 @@ export class Botjam {
           return new Promise((resolve) => {
             // TODO: timeout
             // when timeout, zombie process can remain, so take care
-            const ps = spawn(realCommand, realOptions)
+            // const ps = spawn(realCommand, realOptions)
+            const ps = exec([realCommand].concat(realOptions).join(' '))
 
             let stdout = ''
             let stderr = ''
 
-            ps.stdout.on('data', (data) => {
+            ps.stdout?.on('data', (data) => {
               stdout += data.toString()
             })
 
-            ps.stderr.on('data', (data) => {
+            ps.stderr?.on('data', (data) => {
               stderr += data.toString()
             })
 

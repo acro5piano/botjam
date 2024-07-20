@@ -1,21 +1,28 @@
 import { createBotjamModule } from './createBotjamModule'
 import { BaseModuleArgs } from '../state'
 
-type PacmanArgs = BaseModuleArgs & {
-  name: string
-  updateCache: boolean
-  state: 'present' | 'absent'
+type ShellArgs = BaseModuleArgs & {
+  cmd: string
 }
 
-export const PacmanModule = createBotjamModule<PacmanArgs>({
+export const ShellModule = createBotjamModule<ShellArgs>({
   getName(args) {
-    return `Install package with pacman: ${args.name}`
+    return `Run a shell command: ${args.cmd}`
   },
-  async shouldApply(args, context) {
-    const { stdout } = await context.runCommand('pacman', ['-Qq', args.name])
-    return stdout.length === 0
+  async shouldApply() {
+    return true
   },
   async apply(args, context) {
-    await context.runCommand('pacman', ['-S', '--noconfirm', args.name])
+    const [command, ...commandArgs] = args.cmd.split(' ')
+    if (!command) {
+      throw new Error('Invalid Command')
+    }
+    const res = await context.runCommand(command, commandArgs)
+    if (args.debug) {
+      console.log(res)
+    }
+    if (res.error) {
+      throw res.error
+    }
   },
 })
