@@ -2,6 +2,8 @@
 
 Botjam is a simple, declarative, and agent-less system configuration automation tool in TypeScript.
 
+![image](https://github.com/user-attachments/assets/6e429a25-0547-49b5-88fe-f0940dc8e9b5)
+
 # Features
 
 - Ansible-like syntax
